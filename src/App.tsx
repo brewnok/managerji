@@ -33,9 +33,9 @@ function App() {
       // Calculate the difference in days
       const timeDifference = expiryDate.getTime() - currentDate.getTime();
       const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-      // console.log(expiryDate);
-      // console.log(currentDate);
-      // console.log(daysDifference);
+      console.log(expiryDate);
+      console.log(currentDate);
+      console.log(daysDifference);
       if (daysDifference < 0) {
         setIsSubscriptionValid(false);
         setExpiryDate(expiryDate.toLocaleDateString());
