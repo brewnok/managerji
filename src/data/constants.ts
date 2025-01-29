@@ -6,6 +6,7 @@ export const ROOMS_PER_FLOOR: Record<string, number> = {
   'Floor 1': 7,
   'Floor 2': 7,
   'Floor 3': 7
+
 };
 
 export const FOOD_MENU = [

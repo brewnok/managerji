@@ -16,7 +16,7 @@ export const RoomGrid: React.FC<RoomGridProps> = ({
   const getRoomNumber = (index: number) =>
     `${floor.split(' ')[0][0]}${floor.split(' ')[1][0]}R${index + 1}`;
 
-  const roomsCount = ROOMS_PER_FLOOR[floor] || 0; // Default to 0 if the floor is not defined
+  const roomsCount = ROOMS_PER_FLOOR[floor] || 0;
 
   return (
     <div className="grid grid-cols-5 gap-4">
@@ -30,12 +30,20 @@ export const RoomGrid: React.FC<RoomGridProps> = ({
             key={roomNumber}
             onClick={() => onRoomClick(roomNumber)}
             className={`
-              h-24 rounded-lg shadow-md flex items-center justify-center
+              h-36 rounded-lg shadow-md flex flex-col items-center justify-center
               ${isOccupied ? 'bg-red-500' : 'bg-green-500'}
               hover:opacity-90 transition-opacity
             `}
           >
-            <span className="text-white font-semibold">{roomNumber}</span>
+            <div className="w-36 h-auto flex items-center justify-center">
+              <br />
+              <img
+                src={isOccupied ? 'src/assets/icon-occupied.png' : 'src/assets/icon-free.png'}
+                alt={isOccupied ? 'Occupied Room' : 'Free Room'}
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <span className="text-white font-semibold mt-0.5">{roomNumber}</span>
           </button>
         );
       })}

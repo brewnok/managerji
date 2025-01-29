@@ -8,12 +8,9 @@ import { FLOORS } from './data/constants';
 import { RoomData, PersonalDetails, Service } from './types';
 import { loadRoomData, saveRoomData, saveCheckoutData } from './utils/storage';
 import { ROOMS_PER_FLOOR } from './data/constants';
-
-// Import the image
 import logo from './images/logo.png';
 
 const totalRooms = Object.values(ROOMS_PER_FLOOR).reduce((sum, num) => sum + num, 0);
-console.log(totalRooms);
 
 function App() {
   const [selectedFloor, setSelectedFloor] = useState(FLOORS[0]);
@@ -21,14 +18,56 @@ function App() {
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [showCheckInForm, setShowCheckInForm] = useState(false);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [isSubscriptionValid, setIsSubscriptionValid] = useState(true);
+  const [daysLeft, setDaysLeft] = useState<number | null>(null);
+  const [expiryDate, setExpiryDate] = useState<string | null>(null);
+
+  const fetchExpiryDate = async () => {
+    try {
+      const response = await fetch('https://raw.githubusercontent.com/brewnok/managerji/refs/heads/main/expiry');
+      console.log("Checked expiry date");
+      const expiryDateText =  await response.text();
+      const expiryDate = new Date(expiryDateText.trim());
+      const currentDate = new Date();
+
+      // Calculate the difference in days
+      const timeDifference = expiryDate.getTime() - currentDate.getTime();
+      const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+      // console.log(expiryDate);
+      // console.log(currentDate);
+      // console.log(daysDifference);
+      if (daysDifference < 0) {
+        setIsSubscriptionValid(false);
+        setExpiryDate(expiryDate.toLocaleDateString());
+      } else {
+        setDaysLeft(daysDifference);
+        setExpiryDate(expiryDate.toLocaleDateString());
+        setIsSubscriptionValid(true);
+      }
+    } catch (error) {
+      console.error('Error fetching expiry date:', error);
+      setIsSubscriptionValid(false);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch expiry date immediately on component mount
+    fetchExpiryDate();
+
+    // Set up an interval to fetch expiry date every 5 hours
+    const intervalId = setInterval(fetchExpiryDate, 5000); // 5 hours in milliseconds
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     const data = loadRoomData();
     setRoomData(data);
-    // console.log(data);
   }, []);
 
   const handleRoomClick = (roomNumber: string) => {
+    if (!isSubscriptionValid) return;
     setSelectedRoom(roomNumber);
     if (!roomData[roomNumber]?.isOccupied) {
       setShowCheckInForm(true);
@@ -36,6 +75,7 @@ function App() {
   };
 
   const handleCheckIn = (details: PersonalDetails) => {
+    if (!isSubscriptionValid) return;
     if (selectedRoom) {
       const newRoomData = {
         ...roomData,
@@ -55,6 +95,7 @@ function App() {
   };
 
   const handleAddService = (service: Service) => {
+    if (!isSubscriptionValid) return;
     if (selectedRoom && roomData[selectedRoom]) {
       const newRoomData = {
         ...roomData,
@@ -69,6 +110,7 @@ function App() {
   };
 
   const handleDeleteService = (serviceId: string) => {
+    if (!isSubscriptionValid) return;
     if (selectedRoom && roomData[selectedRoom]) {
       const newRoomData = {
         ...roomData,
@@ -85,6 +127,7 @@ function App() {
   };
 
   const handleEditPersonalDetails = (details: PersonalDetails) => {
+    if (!isSubscriptionValid) return;
     if (selectedRoom && roomData[selectedRoom]) {
       const newRoomData = {
         ...roomData,
@@ -99,6 +142,7 @@ function App() {
   };
 
   const handleCheckout = async () => {
+    if (!isSubscriptionValid) return;
     if (selectedRoom && roomData[selectedRoom]) {
       const checkoutData = {
         ...roomData[selectedRoom],
@@ -124,35 +168,63 @@ function App() {
     }
   };
 
+  const occupiedRooms = Object.values(roomData).filter((room) => room.isOccupied).length;
+  const freeRooms = totalRooms - occupiedRooms;
+
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-6 relative">
+
+      {daysLeft !== null && (
+        <div className="fixed top-0 left-0 p-6 bg-white shadow-md rounded-br-lg">
+          <div className="text-center">
+            <div className="text-6xl font-bold text-blue-600">{daysLeft}</div>
+            <div className="text-lg font-semibold text-gray-700">Days Left</div>
+            {expiryDate && (
+              <div className="text-lg text-black-500">Expiry: {expiryDate}</div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {!isSubscriptionValid && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 text-center">
+            <h2 className="text-2xl font-bold mb-6">Subscription Ended</h2>
+            <p className="text-gray-700">Please renew to continue using the app.</p>
+          </div>
+        </div>
+      )}
+
+      {/* Total Occupied and Free Rooms (Top Right Corner) */}
+      <div className="fixed top-0 right-0 p-4 bg-white shadow-md rounded-bl-lg">
+        <div className="flex space-x-4">
+          <div className="text-center">
+            <div className="text-6xl font-bold text-green-600">{freeRooms}</div>
+            <div className="text-md font-semibold text-gray-700">Available</div>
+          </div>
+          <div className="text-center">
+            <div className="text-6xl font-bold text-red-600">{occupiedRooms}</div>
+            <div className="text-md font-semibold text-gray-700">Occupied</div>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-6xl mx-auto space-y-6">
         <br />
-        {/* Replace the text with the image */}
         <div className="flex justify-center">
           <img src={logo} alt="Hotel Logo" className="h-20" />
         </div>
-  
-        {/* Occupied and Free Rooms Summary */}
-        <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-md">
-          <div className="text-lg font-semibold text-red-600">
-            Total Occupied Rooms:{" "}
-            {Object.values(roomData).filter((room) => room.isOccupied).length}
-          </div>
-          <div className="text-lg font-semibold text-green-600">
-            Total Free Rooms:{" "}
-            {totalRooms - Object.values(roomData).filter((room) => room.isOccupied).length}
-          </div>
-        </div>
-  
+        <br />
+        <hr />
+        <br />
         <FloorSelector selectedFloor={selectedFloor} onFloorChange={setSelectedFloor} />
-  
+        <br />
         <RoomGrid
           floor={selectedFloor}
           roomData={roomData}
           onRoomClick={handleRoomClick}
         />
-  
+
         {showCheckInForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-lg max-w-md w-full p-6">
@@ -167,7 +239,7 @@ function App() {
             </div>
           </div>
         )}
-  
+
         {selectedRoom && roomData[selectedRoom]?.isOccupied && !showCheckoutModal && (
           <div className="bg-white rounded-lg p-6 shadow-md">
             <div className="flex justify-between items-center mb-6">
@@ -188,7 +260,7 @@ function App() {
             />
           </div>
         )}
-  
+
         {showCheckoutModal && selectedRoom && roomData[selectedRoom] && (
           <CheckoutModal
             roomData={roomData[selectedRoom]}
