@@ -27,6 +27,7 @@ export interface RoomData {
   checkOutTime?: string;
   personalDetails?: PersonalDetails;
   services: Service[];
+  checkoutHistory?: CheckoutData[];
 }
 
 export interface CheckoutData extends RoomData {

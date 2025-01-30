@@ -13,8 +13,10 @@ export const RoomGrid: React.FC<RoomGridProps> = ({
   roomData,
   onRoomClick,
 }) => {
-  const getRoomNumber = (index: number) =>
-    `${floor.split(' ')[0][0]}${floor.split(' ')[1][0]}R${index + 1}`;
+  const getRoomNumber = (index: number) => {
+    const floorNumber = floor.match(/\d+/)?.[0] || '0'; // Extract floor number
+    return `${floorNumber}${String(index + 1).padStart(3, '0')}`; // Format as 1001, 1002, etc.
+  };
 
   const roomsCount = ROOMS_PER_FLOOR[floor] || 0;
 

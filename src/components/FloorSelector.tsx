@@ -23,7 +23,7 @@ export const FloorSelector: React.FC<FloorSelectorProps> = ({
             className={`flex-1 px-4 py-2 rounded-md shadow-md text-white font-medium transition-all ${
               selectedFloor === floor
                 ? "bg-blue-500 border-blue-600"
-                : "bg-gray-300 border-gray-400 hover:bg-gray-400 text-black"
+                : "bg-gray-300 border-gray-400 hover:bg-gray-400 !text-black"
             }`}
           >
             {floor}

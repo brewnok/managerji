@@ -24,7 +24,9 @@ function App() {
 
   const fetchExpiryDate = async () => {
     try {
-      const response = await fetch('https://raw.githubusercontent.com/brewnok/managerji/refs/heads/main/expiry');
+      const response =  await fetch('https://raw.githubusercontent.com/brewnok/managerji/refs/heads/main/expiry', {
+        cache: 'no-cache',
+      });
       console.log("Checked expiry date");
       const expiryDateText =  await response.text();
       const expiryDate = new Date(expiryDateText.trim());
@@ -180,7 +182,7 @@ function App() {
             <div className="text-6xl font-bold text-blue-600">{daysLeft}</div>
             <div className="text-lg font-semibold text-gray-700">Days Left</div>
             {expiryDate && (
-              <div className="text-lg text-black-500">Expiry: {expiryDate}</div>
+              <div className="text-md text-black-500">Expiry: {expiryDate}</div>
             )}
           </div>
         </div>
@@ -196,7 +198,7 @@ function App() {
       )}
 
       {/* Total Occupied and Free Rooms (Top Right Corner) */}
-      <div className="fixed top-0 right-0 p-4 bg-white shadow-md rounded-bl-lg">
+      <div className="fixed top-0 right-0 p-9 bg-white shadow-md rounded-bl-lg">
         <div className="flex space-x-4">
           <div className="text-center">
             <div className="text-6xl font-bold text-green-600">{freeRooms}</div>
@@ -269,6 +271,15 @@ function App() {
           />
         )}
       </div>
+
+      {/* Footer */}
+      <footer className="fixed bottom-0 left-0 w-full text-black p-4 text-center">
+        <div>
+          <span>Powered by </span>
+          <img src={logo} alt="Logo" className="inline h-6 mx-2" />
+          <span>a product by brewnok</span>
+        </div>
+      </footer>
     </div>
   );
 }
