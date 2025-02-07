@@ -24,7 +24,7 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
   const [customService, setCustomService] = useState({ name: '', price: 0 });
   const [showEditForm, setShowEditForm] = useState(false);
   const [editedDetails, setEditedDetails] = useState(personalDetails);
-
+  // console.log(checkInDate);
   const handleAddService = () => {
     const newService: Service = {
       id: Date.now().toString(),
@@ -171,6 +171,11 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
                 <p className="text-sm text-gray-600">Number of Adults</p>
                 <p className="font-medium">{personalDetails.numberOfAdults}</p>
               </div>
+              <div>
+                <p className="text-sm text-gray-600">Room Price Per Day</p>
+                <p className="font-medium">{personalDetails.roomPrice}</p>
+              </div>
+              
             </div>
             {personalDetails.adults.length > 0 && (
               <div className="mt-4">

@@ -46,17 +46,29 @@ def prepare_csv():
             customer_id = generate_unique_id(room)
             floor = room['floor']
             room_number = room['roomNumber']
+            name = room['personalDetails'].get('name', '')
             phone = room['personalDetails'].get('phone', '')
             aadhaar = room['personalDetails'].get('aadhaar', '')
             number_of_adults = room['personalDetails'].get('numberOfAdults', 0)
             adult_names = ', '.join([adult['name'] for adult in room['personalDetails'].get('adults', [])])
             check_in_time = room.get('checkInTime', '')
             check_out_time = room.get('checkOutTime', '')
-            total_bill = room.get('totalBill', 0)
+            datetime_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+            check_in = datetime.strptime(check_in_time, datetime_format)
+            check_out = datetime.strptime(check_out_time, datetime_format)
+            roomPerDayPrice = room['personalDetails'].get('roomPrice', 0)
+            duration = (check_out - check_in).days
+            if duration == 0:
+                  duration = 1
+
+            total_price = duration * int(roomPerDayPrice)
+            
+
+            total_bill = room.get('totalBill', 0) + total_price
 
             customer_row = [
-                  customer_id, floor, room_number, phone, aadhaar,
-                  number_of_adults, adult_names, check_in_time, check_out_time, total_bill
+                  customer_id, floor, room_number, name, phone, aadhaar,
+                  number_of_adults, adult_names, check_in_time, check_out_time, roomPerDayPrice, duration, total_bill 
             ]
             customer_table.append(customer_row)
 
@@ -75,7 +87,7 @@ def prepare_csv():
 
       with open(os.path.join(output_dir,'customer_table.csv'), 'w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(["customerID", "floor", "roomNumber", "phone", "aadhaar", "numberOfAdults", "adultNames", "checkInTime", "checkOutTime", "totalBill"])
+            writer.writerow(["customerID", "floor", "roomNumber", "name", "phone", "aadhaar", "numberOfAdults", "adultNames", "checkInTime", "checkOutTime", "roomPerDayCost", "daysStayed", "totalBill"])
             writer.writerows(customer_table)
 
       with open(os.path.join(output_dir,'services_table.csv'), 'w', newline='') as file:
@@ -211,12 +223,13 @@ def main():
                         send_data_to_new_relic(customer_data)
                         send_data_to_new_relic(services_data)
                         last_modified_time = current_modified_time
-                        file = open('roomdata.json', 'w')
-                        file.close()
+                        open('roomdata.json', 'w').close()
                         last_modified_time = current_modified_time
-                  except:
+                        
+                  except Exception as e:
                         print("Re-routing to while block")
                         last_modified_time = current_modified_time
+                  
 
             else:
                   print("NO CHANGE IN THE FILE")

@@ -8,6 +8,7 @@ export interface PersonalDetails {
   aadhaar: string;
   numberOfAdults: number;
   adults: Adult[];
+  roomPrice: number;
 }
 
 export interface Service {

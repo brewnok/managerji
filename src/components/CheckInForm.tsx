@@ -13,11 +13,19 @@ export const CheckInForm: React.FC<CheckInFormProps> = ({ onSubmit, onCancel }) 
     aadhaar: '',
     numberOfAdults: 1,
     adults: [],
+    roomPrice: 0,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
+  };
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value);
+    if (!isNaN(value) && value >= 0) {
+      setFormData({ ...formData, roomPrice: value });
+    }
   };
 
   const handleAdultNameChange = (index: number, name: string) => {
@@ -43,6 +51,7 @@ export const CheckInForm: React.FC<CheckInFormProps> = ({ onSubmit, onCancel }) 
       setFormData({ ...formData, aadhaar: value });
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -81,7 +90,18 @@ export const CheckInForm: React.FC<CheckInFormProps> = ({ onSubmit, onCancel }) 
           className="mt-1 block w-full border-2 border-gray-500 bg-white shadow-sm focus:border-blue-600 focus:ring-blue-600"
         />
       </div>
-
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Room Price</label>
+        <input
+          type="number"
+          min="0"
+          required
+          value={formData.roomPrice}
+          onChange={handlePriceChange}
+          style={{ paddingLeft: '10px', paddingTop: '5px', paddingBottom: '5px'}}
+          className="mt-1 block w-full border-2 border-gray-500 bg-white shadow-sm focus:border-blue-600 focus:ring-blue-600"
+        />
+      </div>
       <div>
         <label className="block text-sm font-medium text-gray-700">Number of Adults</label>
         <input

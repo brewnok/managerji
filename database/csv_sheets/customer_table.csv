@@ -1,2 +1,2 @@
-customerID,floor,roomNumber,phone,aadhaar,numberOfAdults,adultNames,checkInTime,checkOutTime,totalBill
-F1R1_a_20250129_20250129_2,Floor 1,F1R1,2,2,1,,2025-01-29T20:59:49.605Z,2025-01-29T21:00:16.553Z,0
+customerID,floor,roomNumber,name,phone,aadhaar,numberOfAdults,adultNames,checkInTime,checkOutTime,roomPerDayCost,daysStayed,totalBill
+1001_1111_20250207_20250207_1,Floor 1,1001,1111,1,1,1,,2025-02-07T20:01:10.230Z,2025-02-07T20:01:13.551Z,1,1,1

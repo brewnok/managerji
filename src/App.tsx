@@ -28,7 +28,7 @@ function App() {
         cache: 'no-cache',
       });
       console.log("Checked expiry date");
-      const expiryDateText =  await response.text();
+      const expiryDateText =  '02-29-2025' //await response.text();
       const expiryDate = new Date(expiryDateText.trim());
       const currentDate = new Date();
 
@@ -273,13 +273,13 @@ function App() {
       </div>
 
       {/* Footer */}
-      <footer className="fixed bottom-0 left-0 w-full text-black p-4 text-center">
+      {/* <footer className="fixed bottom-0 left-0 w-full text-black p-4 text-center">
         <div>
           <span>Powered by </span>
           <img src={logo} alt="Logo" className="inline h-6 mx-2" />
           <span>a product by brewnok</span>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 }

@@ -12,8 +12,26 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   onConfirm,
   onCancel,
 }) => {
+
+  const calculateDays = () => {
+    const checkInDate = new Date(roomData.checkInTime!);
+    const checkOutDate = new Date(); // Current system date/time
+    const diffTime = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays || 1; // Minimum 1 day
+  };
+
+  const calculateRoomPrice = () => {
+    const perDayPrice = roomData.personalDetails?.roomPrice ?? 0;
+    const days = calculateDays();
+    return perDayPrice * days;
+  };
+
+  const days = calculateDays();
+  const perDayPrice = roomData.personalDetails?.roomPrice ?? 0;
+
   const calculateTotal = () => {
-    return roomData.services.reduce(
+    return perDayPrice + roomData.services.reduce(
       (total, service) => total + service.price * service.quantity,
       0
     );
@@ -59,6 +77,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             </div>
           </div>
 
+          
+
           <div>
             <h3 className="text-lg font-medium mb-3">Services</h3>
             <div className="space-y-2">
@@ -78,6 +98,24 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   <p className="font-medium">₹{service.price * service.quantity}</p>
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-medium mb-3">Room Charges</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-md">
+                <div>
+                  <p className="font-medium">Room Price (per day)</p>
+                  <p className="text-sm text-gray-600">
+                    Stay Duration: {days} {days === 1 ? 'day' : 'days'}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="font-medium">₹{perDayPrice}</p>
+                  <p className="font-bold">Total: ₹{calculateRoomPrice()}</p>
+                </div>
+              </div>
             </div>
           </div>
 
